@@ -1,3 +1,5 @@
+import os
+
 from arpeggio.cleanpeg import ParserPEG
 from arpeggio import PTNodeVisitor, visit_parse_tree
 
@@ -120,7 +122,7 @@ layout_parser = ParserPEG(grammar, "layout")
 layout_tree = layout_parser.parse(layout_test)
 layout_result = visit_parse_tree(layout_tree, IUIVisitor())
 
-with open('inferui/inferui.json', 'r') as data:
+with open('src/mockdown_eval/inferui/inferui.json', 'r') as data:
   iui_str = data.read()
 
 def load_iui() -> List[Layout]:

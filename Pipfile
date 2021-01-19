@@ -6,12 +6,15 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-mockdown = "*"
+mockdown = "0.1.0"
 dataclasses-json = "*"
 Arpeggio = "*"
 mypy = "*"
 numpy = "*"
-
+pyyaml = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.8.2"
+
+[pipenv]
+allow_prereleases = true
