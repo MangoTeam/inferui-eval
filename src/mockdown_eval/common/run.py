@@ -11,12 +11,24 @@ from enum import Enum
 
 import json
 
+from pathlib import Path
+
+import os
+
 @dataclass_json
 @dataclass 
 class View:
   name: str
   rect: List[float]
   children: List[View]
+
+  def left(self): return self.rect[0]
+  def right(self): return self.rect[2]
+  def width(self): return self.right() - self.left()
+
+  def top(self): return self.rect[1]
+  def bottom(self): return self.rect[3]
+  def height(self): return self.bottom() - self.top()
 
 
   def validate(self):
@@ -75,6 +87,13 @@ class MockRun:
       print(*['timeout', str(self.timeout), 'pipenv run --', pref, *opts], file=runner)
 
   def run_cmd(self): 
+    Path(self.output_fname).touch()
+    Path(self.input_fname).touch()
+    os.remove(self.input_fname)
+    os.remove(self.output_fname)
+    Path(self.output_fname).touch()
+    Path(self.input_fname).touch()
+
     self.write_to_input()
     self.make_runner()
     return timeit(lambda : run('tmp/runner.sh'), number=1)

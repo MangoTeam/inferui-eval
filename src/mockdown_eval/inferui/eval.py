@@ -6,6 +6,8 @@ from ..common.run import *
 from yaml import safe_load
 from pathlib import Path
 
+import os
+
 def summary_stats():
   layouts = load_iui()
   sizes = np.array([len(l.renderings[0].boxes) for l in layouts])
@@ -21,10 +23,27 @@ def summary_stats():
 
 def rend_to_gspec(x: List[Rendering]) -> GlobalSpec:
   heights = [rend.resolution.height for rend in x]
-  widths = [rend.resolution.height for rend in x]
+  widths = [rend.resolution.width for rend in x]
 
   return GlobalSpec(min(heights), max(heights), min(widths), max(widths))
 
+def validate_examples(exs: List[View]) -> None:
+  # parse, not validate...
+
+  # make sure the first example has dimension 1440x2560,
+  # the second 1400x2520
+  # the last 1480x2600
+
+  assert len(exs) == 3, "bad length of InferUI examples"
+  [t1, t2, test] = exs
+
+  # print("t1", t1)
+  # print("t2", t2)
+  # print("test", test)
+
+  assert t1.width() == 1440 and t1.height() == 2560
+  assert t2.width() == 1400 and t2.height() == 2520
+  assert test.width() == 1480 and test.height() == 2600
 
 
 def IUI2Mock(x: Layout, num_examples: int = 2) -> Tuple[MockRun, View]:
@@ -33,12 +52,19 @@ def IUI2Mock(x: Layout, num_examples: int = 2) -> Tuple[MockRun, View]:
   if num_examples > len(x.renderings) - 1:
     print('warning: training example included in IUI experiment')
   
-  timeout = 60
+  timeout = 300
   loc_type = LocalType.BAYESIAN
   glob_type = GlobalType.HIER
   glob_spec = rend_to_gspec(x.renderings)
 
   examples = [rend.to_view() for rend in x.renderings]
+
+  assert len(examples) == 3
+
+  # it turns out the ordering of the first two (second is synthesizer input, first is distinguishing input)
+  examples = [examples[1], examples[0], examples[-1]]
+ 
+  validate_examples(examples)
 
   inp_fname = 'tmp/' + str(x.id) + "_input.json"
   out_fname = 'tmp/' + str(x.id) + "_output.json"
@@ -78,8 +104,10 @@ def formatMR(test: View, id: int, mr: MockRun, synth_time: float) -> str:
 
 def run_automock_iui(automock_json_path: str):
   result = run(['npm', 'run-script', '--prefix', '../auto-mock', 'iui', '--', '--path', '../mockdown-inferui-eval/' + automock_json_path], capture_output=True, universal_newlines=True)
-  # print('automock iui output:')
-  # print(result.stdout)
+  print('automock iui output:')
+  print(result.stdout)
+  print('automock stderror')
+  print(result.stderr)
   # return safe_load(' '.join(result.stdout.split('\n')[4:-1]))
 
 
@@ -100,13 +128,17 @@ def evaluate_summary(x):
   print('total', total)
 
 
-def main(): 
+def main(examples = 1): 
+  # 138 gets 5/6 on both 1 and 2 examples
+  # interests = [138]
+  # layouts = [x for x in load_iui() if x.id in interests]
   layouts = load_iui()
   results = {}
-
+  
   for layout in layouts:
     print('starting layout', layout.id)
-    mock_run, test_example = IUI2Mock(layout, 1)
+    mock_run, test_example = IUI2Mock(layout, examples)
+
     synth_time = mock_run.run_cmd()
     auto_json = formatMR(test_example, layout.id, mock_run, synth_time)
     # auto_json = 'tmp/automock.json'
