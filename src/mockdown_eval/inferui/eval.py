@@ -103,7 +103,7 @@ def formatMR(test: View, id: int, mr: MockRun, synth_time: float) -> str:
   return encoding_fname
 
 def run_automock_iui(automock_json_path: str):
-  result = run(['npm', 'run-script', '--prefix', '../auto-mock', 'iui', '--', '--path', '../mockdown-inferui-eval/' + automock_json_path], capture_output=True, universal_newlines=True)
+  result = run(['npm', 'run-script', '--prefix', '../eval-web', 'iui', '--', '--path', '../eval-android/' + automock_json_path], capture_output=True, universal_newlines=True)
   print('automock iui output:')
   print(result.stdout)
   print('automock stderror')
