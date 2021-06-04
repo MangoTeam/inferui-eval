@@ -67,7 +67,7 @@ class MockRun:
 
   def gen_run_cmd(self) -> Tuple[str, List[str]]:
     prefix = 'mockdown run'
-    path_prefix = '../mockdown-inferui-eval/'
+    path_prefix = '../eval-android/'
     opts = [str(x) for x in ['-pb', self.glob_spec.wlo, self.glob_spec.hlo, self.glob_spec.whi, self.glob_spec.hhi, '-pm', self.glob_type.value, '--learning-method', self.loc_type.value, path_prefix + self.input_fname, path_prefix + self.output_fname]]
     return (prefix, opts)
 
