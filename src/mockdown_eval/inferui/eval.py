@@ -52,7 +52,7 @@ def IUI2Mock(x: Layout, num_examples: int = 2) -> Tuple[MockRun, View]:
   if num_examples > len(x.renderings) - 1:
     print('warning: training example included in IUI experiment')
   
-  timeout = 300
+  timeout = 180
   loc_type = LocalType.BAYESIAN
   glob_type = GlobalType.HIER
   glob_spec = rend_to_gspec(x.renderings)
@@ -128,11 +128,14 @@ def evaluate_summary(x):
   print('total', total)
 
 
-def main(examples = 1): 
+def main(examples = 2): 
   # 138 gets 5/6 on both 1 and 2 examples
-  # interests = [138]
+  # interests = [6]
+  # interests = [6,73,91,95,145,146,148,168,172,184,186,204,250,258,325,385,467,474,507,542,567,571,585,586,664,712,715,717,723,730,745,761,792,832,863,870,885,938,966,983,1013,1067,1069,1089,1092,1166,1171,1184,1214,1254,1318,1378,1389,1460,1497,1516,1525,1528,1568,1621,1627,1653,1654,1728,1821,1842,1850,1896,1899,1975,2157,2160,2173,2179,2201]
   # layouts = [x for x in load_iui() if x.id in interests]
+  # start = 1398
   layouts = load_iui()
+  # layouts = [x for x in layouts if x.id > start]
   results = {}
   
   for layout in layouts:

@@ -5,5 +5,5 @@ with a `.gitignore` file.
 To run:
 
 1. `pipenv shell`
-2.  python3 -c "from  src.mockdown_eval.inferui.eval import main; main()"
+2.  python3 -c "from  src.mockdown_eval.inferui.eval import main; main(2)"
 
